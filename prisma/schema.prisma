@@ -1,0 +1,149 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Schemas
+
+model Address {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @db.VarChar(255)
+  phone     String
+  pincode   String
+  locality  String
+  address   String
+  city      String
+  state     String
+  landmark  String?
+  work      Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  orders    Order[]
+  owner     User?    @relation("default address")
+}
+
+model Profile {
+  id        Int     @id @default(autoincrement())
+  firstName String
+  lastName  String?
+  gender    String?
+  phone     String?
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id               String    @id
+  email            String    @unique
+  name             String?
+  role             String    @default("user")
+  image            String?
+  defaultAddressId Int?      @unique
+  defaultAddress   Address?  @relation("default address", fields: [defaultAddressId], references: [id])
+  profile          Profile?
+  addresses        Address[]
+  cart             Item[]
+  orders           Order[]
+}
+
+// Product
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Product   Product[]
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Int
+  discount    Int      @default(0)
+  imageUrl    String
+  stock       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // relationships
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId Int?
+
+  item            Item[]
+  OrderedProducts OrderedProduct[]
+  Image           Image?           @relation(fields: [imageId], references: [id])
+  imageId         String?
+}
+
+model Item {
+  id        Int     @id @default(autoincrement())
+  quantity  Int     @default(1)
+  userId    String
+  productId Int
+  user      User    @relation(fields: [userId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id        Int         @id @default(autoincrement())
+  subTotal  Int
+  status    OrderStatus @default(PENDING)
+  confirmed Boolean     @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User             @relation(fields: [userId], references: [id])
+  userId     String
+  address    Address          @relation(fields: [addressId], references: [id])
+  addressId  Int
+  orderItems OrderedProduct[]
+}
+
+model OrderedProduct {
+  id       Int @id @default(autoincrement())
+  quantity Int
+  price    Int
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   Int
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model Image {
+  id         String @id
+  title      String @unique
+  url        String @unique
+  width      Int
+  height     Int
+  size       Int
+  time       Int
+  expiration Int
+  thumb      String @unique
+  delete_url String @unique
+
+  product Product[]
+}
