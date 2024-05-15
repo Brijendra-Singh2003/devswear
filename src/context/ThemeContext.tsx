@@ -41,7 +41,7 @@ function Body({ children, className }: props) {
   return (
     <body
       className={cn(
-        "min-h-screen bg-background font-sans antialiased",
+        "min-h-screen min-w-80 bg-background font-sans antialiased",
         theme,
         className
       )}

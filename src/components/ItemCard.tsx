@@ -7,7 +7,7 @@ export function ItemCard(item: Product) {
   return (
     <div
       key={item.id}
-      className="flex bg-card rounded-md border flex-col shadow max-w-64 flex-grow col-span-1 gap-2 lg:hover:scale-105 lg:hover:-translate-y-3 transition"
+      className="flex flex-col justify-between h-full mx-auto sm:h-[30rem] bg-card rounded-md border shadow max-w-64 flex-grow col-span-1 gap-2 lg:hover:scale-105 lg:hover:-translate-y-3 transition"
     >
       <Link
         href={"/product/" + item.id}

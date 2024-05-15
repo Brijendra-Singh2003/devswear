@@ -1,15 +1,24 @@
 import { ItemCard } from "@/components/ItemCard";
-import { Button } from "@/components/ui/button";
 import prisma from "@/lib/db";
 import { Product } from "@prisma/client";
 import { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Home",
   description: "A website to buy cloths",
 };
+
+const categories = [
+  "",
+  "topwear",
+  "bottomwear",
+  "mousepad",
+  "footwear",
+  "mug",
+  "cap",
+  "hoodie",
+];
 
 export default async function Home() {
   const [tshirts, hoodies, shoes] = await prisma.$transaction([
@@ -53,10 +62,13 @@ function ProductSection({
 }) {
   return (
     <div>
-      <h1 className="max-w-7xl capitalize w-fill mx-auto px-4 mb-8 mt-16 text-3xl text-center font-bold">
+      <Link
+        href={`/${categories[products[0].categoryId || 0]}`}
+        className="max-w-7xl hover:underline capitalize w-fill mx-auto block px-4 mb-8 mt-16 text-3xl text-center font-bold"
+      >
         {categoryName}
-      </h1>
-      <div className="flex flex-wrap items-center justify-center gap-8 max-w-7xl px-4 sm:px-8 mx-auto">
+      </Link>
+      <div className="grid grid-cols-2 sm:flex flex-wrap items-center justify-center sm:gap-8 max-w-7xl sm:px-8 mx-auto">
         {products.map(ItemCard)}
       </div>
     </div>
