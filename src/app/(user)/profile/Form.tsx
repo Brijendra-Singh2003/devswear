@@ -148,3 +148,42 @@ export default function Form({ profile }: { profile: formData }) {
     </div>
   );
 }
+
+export const FormSkeleton = (
+  <div className="flex mt-2 flex-col gap-4 md:grid grid-cols-2 xl:gap-8">
+      <div className="flex flex-col">
+        <h3 className="py-2">First name</h3>
+        <div className="p-2 font-bold">
+          <div className="h-8 w-full bg-gray-200 dark:bg-gray-600 rounded animate-pulse"/>
+        </div>
+      </div>
+
+      <div className="flex flex-col">
+        <h3 className="py-2">Last name</h3>
+        <div className="p-2 font-bold">
+        <div className="h-8 w-full bg-gray-200 dark:bg-gray-600 rounded animate-pulse"/>
+        </div>
+      </div>
+
+      <div className="flex flex-col">
+        <h3 className="py-2">Mobile Number</h3>
+        <div className="p-2 font-bold">
+          
+        <div className="h-8 w-full bg-gray-200 dark:bg-gray-600 rounded animate-pulse"/>
+        </div>
+      </div>
+
+      <div className="flex flex-col">
+        <h3 className="py-2">Gender</h3>
+        <div className="p-2 font-bold">
+        <div className="h-8 w-full bg-gray-200 dark:bg-gray-600 rounded animate-pulse"/>
+        </div>
+      </div>
+
+      <div className="col-span-2 flex justify-end gap-4">
+        <Button size="sm" disabled={true}>
+          Edit
+        </Button>
+      </div>
+    </div>
+);

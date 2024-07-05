@@ -54,7 +54,7 @@ export async function CreateAddress(newAddress: NewAddress, redirectUrl: string 
     const userId = session?.user?.email;
 
     if (!userId) {
-        return "Un Authenticated";
+        return "Please sign in";
     }
 
     await prisma.address.create({
@@ -76,6 +76,19 @@ export async function CreateAddress(newAddress: NewAddress, redirectUrl: string 
 }
 
 export async function UpdateAddress(id: number, newAddress: NewAddress, redirectUrl: string = "/address") {
+    const session = await auth();
+    const userId = session?.user?.email;
+
+    if (!userId) {
+        return "please sign in";
+    }
+
+    const oldAddress = await prisma.address.findUnique({ where: { id }, select: { userId: true } });
+
+    if (oldAddress?.userId !== userId) {
+        return "access denied";
+    }
+
     await prisma.address.update({
         where: { id }, data: {
             name: newAddress.name,

@@ -24,10 +24,14 @@ export default function Form({ prevAddress, redirectUrl }: props) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setloading(true);
+    let err: string;
     if (prevAddress?.id) {
-      await UpdateAddress(prevAddress.id, address, redirectUrl);
+      err = await UpdateAddress(prevAddress.id, address, redirectUrl);
     } else {
-      await CreateAddress(address, redirectUrl);
+      err = await CreateAddress(address, redirectUrl);
+    }
+    if (err) {
+      alert(err);
     }
     setloading(false);
   }

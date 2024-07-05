@@ -99,7 +99,7 @@ model Item {
 }
 
 model Order {
-  id        Int         @id @default(autoincrement())
+  id        String      @id @default(uuid())
   subTotal  Int
   status    OrderStatus @default(PENDING)
   confirmed Boolean     @default(false)
@@ -122,7 +122,7 @@ model OrderedProduct {
   product   Product @relation(fields: [productId], references: [id])
   productId Int
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId   Int
+  orderId   String
 }
 
 enum OrderStatus {
