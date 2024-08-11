@@ -2,6 +2,7 @@
 
 import { addItem } from "@/actions/cart";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import React, { useState } from "react";
 
 export default function AddToCartBtn({
@@ -27,7 +28,7 @@ export default function AddToCartBtn({
         Add To Cart
       </Button>
       <Button className="hover:bg-amber-400 text-black bg-yellow-400">
-        Buy Now
+        <Link href={`/checkout?product=${productId}`}>Buy Now</Link>
       </Button>
     </div>
   );

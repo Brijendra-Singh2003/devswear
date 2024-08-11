@@ -2,12 +2,9 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { redirect } from "next/navigation";
 import React, { Suspense } from "react";
-import CheckOutBtn from "./_components/CheckOutBtn";
 import CartItems, { CartItemSkeleton } from "./_components/CartItem";
-import ShippingAddress, {
-  ShippingAddressSkeleton,
-} from "./_components/ShippingAddress";
-import { wait } from "@/util/pay";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export const metadata = {
   title: "Cart",
@@ -38,10 +35,6 @@ export default async function page() {
   return (
     <main className="w-full md:grid grid-cols-3 gap-4 py-4 sm:px-4 mx-auto max-w-6xl">
       <div className="w-full col-span-2 rounded-md flex flex-col gap-4 mb-4">
-        <Suspense fallback={ShippingAddressSkeleton}>
-          <ShippingAddress userId={userId} />
-        </Suspense>
-
         <Suspense fallback={CartItemSkeleton}>
           <CartItems productsPromise={productsPromise} />
         </Suspense>
@@ -60,6 +53,7 @@ async function PriceDetails(props: { userId: string }) {
     select: {
       product: {
         select: {
+          id: true,
           price: true,
           discount: true,
         },
@@ -98,7 +92,9 @@ async function PriceDetails(props: { userId: string }) {
       <h2 className="flex font-bold text-lg justify-between p-2">
         <span>Total Amount</span> <span>₹{price - discount}</span>
       </h2>
-      <CheckOutBtn />
+      <Button asChild size="lg" className="text-lg ml-auto mt-2">
+        <Link href="/checkout">Checkout</Link>
+      </Button>
     </div>
   );
 }

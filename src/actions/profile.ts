@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -57,19 +58,41 @@ export async function CreateAddress(newAddress: NewAddress, redirectUrl: string 
         return "Please sign in";
     }
 
-    await prisma.address.create({
-        data: {
-            userId,
-            name: newAddress.name,
-            phone: newAddress.phone,
-            city: newAddress.city,
-            pincode: newAddress.pincode,
-            state: newAddress.state,
-            landmark: newAddress.landmark,
-            locality: newAddress.locality,
-            address: newAddress.address,
-        }
-    });
+    const result = await prisma.$queryRawUnsafe(`
+        WITH new_address AS (
+            INSERT INTO "Address" (
+                "userId",
+                "name",
+                "phone",
+                "pincode",
+                "locality",
+                "address",
+                "city",
+                "state",
+                "landmark",
+                "updatedAt"
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            RETURNING "id"
+        )
+        UPDATE "User"
+        SET "defaultAddressId" = (SELECT "id" FROM new_address)
+        WHERE "email" = $1
+        RETURNING "defaultAddressId"`,
+        userId,
+        newAddress.name,
+        newAddress.phone,
+        newAddress.pincode,
+        newAddress.locality,
+        newAddress.address,
+        newAddress.city,
+        newAddress.state,
+        newAddress.landmark,
+        new Date()
+    );
+
+    console.log(result);
+
     revalidatePath("/cart");
     revalidatePath("/address");
     redirect(redirectUrl);
@@ -116,7 +139,7 @@ export async function SetAsDefaultAddress(id: number) {
         where: { id: session.user.email }, data: { defaultAddressId: id }
     });
 
-    revalidatePath("/cart");
+    revalidatePath("/checkout");
 }
 
 export async function DeleteAddress(id: number) {

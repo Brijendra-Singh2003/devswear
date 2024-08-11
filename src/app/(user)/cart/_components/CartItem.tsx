@@ -24,14 +24,14 @@ export default async function CartItems({
       key={product.id}
       className="flex flex-col bg-popover rounded shadow md:shadow-md relative transition-all p-2 md:p-4 md:gap-4"
     >
-      <div className="flex relative">
-        <Link href={"/product/" + product.id} className="max-w-[30%] min-w-24">
+      <div className="grid grid-cols-4 relative">
+        <Link className="col-span-1" href={"/product/" + product.id}>
           <Image
             height={400}
             width={400}
             src={product.imageUrl}
             alt={product.name + " image"}
-            className="aspect-square object-cover mx-auto"
+            className="aspect-square object-cover mx-auto w-full"
           />
         </Link>
         <div className="col-span-3 ml-4 flex flex-col md:gap-2 text-sm">
@@ -58,7 +58,7 @@ export default async function CartItems({
       </div>
 
       <div className="flex gap-2 justify-end px-1">
-        <RmByBtn id={id} quantity={quantity} />
+        <RmByBtn id={id} quantity={quantity} productId={product.id} />
       </div>
     </div>
   ));

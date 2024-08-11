@@ -32,7 +32,7 @@ export default async function Page({
       <h1 className="max-w-7xl capitalize w-fill mx-auto px-4 my-8 text-3xl text-center font-bold">
         Explore Our {category} Collection
       </h1>
-      <div className="grid grid-cols-2 sm:flex flex-wrap sm:gap-x-8 sm:gap-y-12 items-center justify-center max-w-7xl sm:px-8 mx-auto">
+      <div className="grid grid-cols-2 sm:flex flex-wrap max-w-7xl justify-center mx-auto">
         {products.map(ItemCard)}
       </div>
     </main>

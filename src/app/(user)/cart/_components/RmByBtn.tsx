@@ -13,15 +13,18 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import React, { useState } from "react";
 import { FaRegTrashCan } from "react-icons/fa6";
 
 export default function RmByBtn({
   quantity,
   id,
+  productId,
 }: {
   quantity: number;
   id: number;
+  productId: number;
 }) {
   const [loading, setLoading] = useState(false);
   async function remove() {
@@ -58,9 +61,10 @@ export default function RmByBtn({
         size="sm"
         // variant="custom"
         // className="bg-blue-600 hover:bg-blue-700 text-white"
+        asChild
         disabled={loading}
       >
-        Buy Now
+        <Link href={`/checkout?product=${productId}&qty=${quantity}`}>Buy Now</Link>
       </Button>
     </>
   );

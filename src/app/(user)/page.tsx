@@ -68,7 +68,7 @@ function ProductSection({
       >
         {categoryName}
       </Link>
-      <div className="grid grid-cols-2 sm:flex flex-wrap items-center justify-center sm:gap-8 max-w-7xl sm:px-8 mx-auto">
+      <div className="grid grid-cols-2 sm:flex flex-wrap items-center justify-center max-w-7xl mx-auto">
         {products.map(ItemCard)}
       </div>
     </div>

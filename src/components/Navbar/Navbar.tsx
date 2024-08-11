@@ -46,7 +46,6 @@ const Navbar = ({ session }: { session: Session | null }) => {
     if (session?.user?.email) {
       getCartSize(session?.user?.email).then((size) => {
         setcount(size);
-        console.log(size);
       });
     }
   });

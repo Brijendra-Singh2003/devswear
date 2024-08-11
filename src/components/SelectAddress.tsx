@@ -1,6 +1,6 @@
 "use client";
 
-import { SetAsDefaultAddress } from "@/actions/profile";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,33 +10,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import React, { useState } from "react";
 
-export default function SelectAddress({
-  addresses,
-  text,
-}: {
+type Props = {
   addresses?: { name: string; id: number }[] | null;
-  text: string;
-}) {
-  const [isLoading, setIsLoading] = useState(false);
+  updateDefaultAddress: (id: number) => void;
+  children: string;
+}
 
-  async function updateDefaultAddress(id: number) {
-    setIsLoading(true);
-    const error = await SetAsDefaultAddress(id);
-    if (error) {
-      alert(error);
-    }
-    setIsLoading(false);
-  }
+export default function SelectAddress({addresses, updateDefaultAddress, children}: Props) {
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         asChild
-        disabled={isLoading}
         className="disabled:opacity-40"
       >
-        <Button size="sm">{text}</Button>
+        <Button size="sm">{children}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40">
         {addresses?.map((addresse) => (
@@ -47,9 +36,9 @@ export default function SelectAddress({
             {addresse.name}
           </DropdownMenuItem>
         ))}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Link href="/address/new?redirect=/cart">Add New</Link>
+        {addresses?.length ? <DropdownMenuSeparator /> : ""}
+        <DropdownMenuItem asChild>
+          <Link href="/address/new?redirect=/checkout">Add New</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

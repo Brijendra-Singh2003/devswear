@@ -1,33 +1,48 @@
-import prisma from "@/lib/db";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import SelectAddress from "./SelectAddress";
-import AddressCard from "@/components/AddressCard/AddressCard";
-import { Button } from "@/components/ui/button";
+import AddressCard from "./AddressCard/AddressCard";
+import { Address } from "@prisma/client";
+import { Button } from "./ui/button";
 import { SlOptionsVertical } from "react-icons/sl";
+import { SetAsDefaultAddress } from "@/actions/profile";
 
-export default async function ShippingAddress(props: { userId: string }) {
+type Props = {
+  defaultAddress?: Address | null;
+  addresses: { name: string; id: number }[];
+};
 
-  const user = await prisma.user.findUnique({
-    where: { id: props.userId },
-    select: {
-      defaultAddress: true,
-      addresses: { select: { name: true, id: true } },
-    },
-  });
+export default function ShippingAddress(props: Props) {
+  const [loading, setLoading] = useState(false);
 
-  return (
+  async function updateDefaultAddress(id: number) {
+    setLoading(true);
+    const err = await SetAsDefaultAddress(id);
+
+    if (err) {
+        alert(err);
+        setLoading(false);
+    }
+  }
+
+  useEffect(()=>{
+    setLoading(false);
+  }, [props.defaultAddress])
+
+  return loading ? ShippingAddressSkeleton : (
     <div className="flex flex-col bg-popover rounded shadow md:shadow-md relative transition-all p-4 md:gap-4">
       <div className="mb-2 flex justify-between items-center">
         <b className="text-lg">Shipping Address</b>
-        <SelectAddress
-          addresses={user?.addresses}
-          text={user?.defaultAddress ? "Change" : "Select"}
-        />
+        <SelectAddress addresses={props.addresses} updateDefaultAddress={updateDefaultAddress}>
+          {props.defaultAddress ? "Change" : "Select"}
+        </SelectAddress>
       </div>
 
-      {user?.defaultAddress ? (
-        AddressCard(user.defaultAddress)
+      {props.defaultAddress ? (
+        AddressCard(props.defaultAddress)
       ) : (
-        <p>No Address Selected</p>
+        <p className="text-destructive">No Address Selected</p>
       )}
     </div>
   );
