@@ -82,26 +82,26 @@ export default async function Home() {
       <section className="shadow-md">
         <App isMobile={isMobile} items={images} />
       </section>
-      <Suspense fallback={<CollectionSkeleton title="Bestselling Products" />}>
+      <Suspense
+        key={"Bestselling"}
+        fallback={<CollectionSkeleton title="Bestselling Products" />}
+      >
         <Collection
-          key={"T-Shirts"}
           title="Bestselling Products"
           productsPromese={popularProducts}
         />
       </Suspense>
-      <Suspense fallback={<CollectionSkeleton title="Top Rated Products" />}>
-        <Collection
-          key={"T-Shirts"}
-          title="Top Rated Products"
-          productsPromese={topRated}
-        />
+      <Suspense
+        key={"Rated"}
+        fallback={<CollectionSkeleton title="Top Rated Products" />}
+      >
+        <Collection title="Top Rated Products" productsPromese={topRated} />
       </Suspense>
-      <Suspense fallback={<CollectionSkeleton title="Top Deals" />}>
-        <Collection
-          key={"T-Shirts"}
-          title="Top Deals"
-          productsPromese={bestDeals}
-        />
+      <Suspense
+        key={"Deals"}
+        fallback={<CollectionSkeleton title="Top Deals" />}
+      >
+        <Collection title="Top Deals" productsPromese={bestDeals} />
       </Suspense>
     </main>
   );
@@ -121,9 +121,9 @@ function ProductSection({
       </h1>
       <div className="w-full overflow-x-scroll items-center mx-auto">
         <div className="flex gap-2 w-fit py-2">
-          {products.map((item) => {
+          {products.map((item, key) => {
             return (
-              <div className="w-60">
+              <div className="w-60" key={key}>
                 <ItemCard {...item} />
               </div>
             );
