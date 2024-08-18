@@ -16,17 +16,6 @@ export const metadata: Metadata = {
   description: "A website to buy cloths",
 };
 
-const categories = [
-  "",
-  "topwear",
-  "bottomwear",
-  "mousepad",
-  "footwear",
-  "mug",
-  "cap",
-  "hoodie",
-];
-
 const getPopularProducts = cache(
   async () => {
     return await prisma.product.findMany({

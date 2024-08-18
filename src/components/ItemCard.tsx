@@ -7,7 +7,7 @@ export function ItemCard(item: Product) {
   return (
     <div
       key={item.id}
-      className="flex flex-col justify-between h-full w-full sm:mx-0 mx-auto bg-card rounded-md border shadow max-w-64 flex-grow col-span-1 gap-2 hover:shadow-lg transition"
+      className="flex flex-col justify-between w-full max-w-64 sm:mx-0 mx-auto bg-card rounded-md border shadow flex-grow col-span-1 hover:shadow-lg transition"
     >
       <Link
         href={"/product/" + item.id}
@@ -34,7 +34,7 @@ export function ItemCard(item: Product) {
           </p>
         </div>
       </Link>
-      <Button asChild className="mx-2 mb-2">
+      <Button asChild className="m-2">
         <Link href={`/checkout?product=${item.id}`}>Buy Now</Link>
       </Button>
     </div>
