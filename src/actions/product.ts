@@ -50,6 +50,8 @@ export async function AddNewProduct(_: unknown, formData: FormData) {
         body: bucketParams,
     }).then(res => res.json());
 
+    console.log("Uploded image", img);
+
     if (!img.success) {
         const product = await prisma.product.create({
             data: {
