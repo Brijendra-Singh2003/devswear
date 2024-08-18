@@ -28,11 +28,11 @@ export default async function Page({
   }
 
   return (
-    <main>
-      <h1 className="max-w-7xl capitalize w-fill mx-auto px-4 my-8 text-3xl text-center font-bold">
+    <main className="max-w-[1440px] mx-auto">
+      <h1 className="capitalize w-fill mx-auto px-4 my-8 text-3xl text-center font-bold">
         Explore Our {category} Collection
       </h1>
-      <div className="grid grid-cols-2 sm:flex flex-wrap max-w-7xl justify-center mx-auto">
+      <div className="grid grid-cols-2 sm:flex flex-wrap sm:gap-2 justify-center mx-auto">
         {products.map(ItemCard)}
       </div>
     </main>

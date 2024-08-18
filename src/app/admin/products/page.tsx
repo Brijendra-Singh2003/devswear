@@ -8,7 +8,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import prisma from "@/lib/db";
-import { CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
 import React, { Suspense } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";

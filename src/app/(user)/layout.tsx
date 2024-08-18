@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar/Navbar";
 import { auth } from "@/lib/auth";
 import React, { ReactNode } from "react";
@@ -8,6 +9,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
     <>
       <Navbar session={session} />
       {children}
+      <Footer/>
     </>
   );
 }
