@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/db";
 import { Product } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -66,6 +66,7 @@ export async function AddNewProduct(_: unknown, formData: FormData) {
         console.log("created product: ", product);
     }
 
+    revalidateTag("Products");
     revalidatePath("/");
     redirect("/admin/products");
 }
@@ -116,6 +117,7 @@ export async function UpdateProduct(formData: FormData) {
 
     console.log("updated product: ", newProduct);
 
+    revalidateTag("Products");
     revalidatePath("/");
     redirect("/admin/products");
 }
