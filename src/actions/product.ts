@@ -52,7 +52,7 @@ export async function AddNewProduct(_: unknown, formData: FormData) {
 
     console.log("Uploded image", img);
 
-    if (!img.success) {
+    if (img.success) {
         const product = await prisma.product.create({
             data: {
                 name: result.data.name,
