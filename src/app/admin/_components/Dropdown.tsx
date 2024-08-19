@@ -16,7 +16,7 @@ import React, { useState } from "react";
 type props = {
   stock: number;
   _count: {
-    OrderedProducts: number;
+    Orders: number;
   };
   id: number;
 };
@@ -83,7 +83,7 @@ export default function Dropdown(product: props) {
                 ? "cannot delete products with orders"
                 : undefined
             }
-            disabled={pending === "delete" || product._count.OrderedProducts > 0}
+            disabled={pending === "delete" || product._count.Orders > 0}
           >
             {pending === "delete" ? "Deleting..." : "Delete"}
           </button>

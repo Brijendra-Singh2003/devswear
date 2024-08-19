@@ -61,7 +61,7 @@ async function ProductsTable({page}: {page: number}) {
       discount: true,
       stock: true,
       imageUrl: true,
-      _count: { select: { OrderedProducts: true } },
+      _count: { select: { Orders: true } },
     },
     orderBy: {
       createdAt: "desc"
@@ -101,7 +101,7 @@ async function ProductsTable({page}: {page: number}) {
             <TableCell>{formatNumber(product.stock)}</TableCell>
             <TableCell>₹{formatNumber(product.price)}</TableCell>
             <TableCell>₹{formatNumber(product.discount)}</TableCell>
-            <TableCell>{formatNumber(product._count.OrderedProducts)}</TableCell>
+            <TableCell>{formatNumber(product._count.Orders)}</TableCell>
             <TableCell>
               <Dropdown {...product} />
             </TableCell>
