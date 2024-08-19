@@ -16,21 +16,23 @@ export const metadata: Metadata = {
   description: "A website to buy cloths",
 };
 
-const getPopularProducts = cache(
+const getPopularProducts = 
+// cache(
   async () => {
     return await prisma.product.findMany({
       orderBy: {
-        OrderedProducts: {
+        Orders: {
           _count: "desc",
         },
       },
       take: 10,
     });
-  },
-  ["Products", "getPopularProducts"],
-  { tags: ["Products", "getPopularProducts"] }
-);
-const getTopRated = cache(
+  }
+  // ["Products", "getPopularProducts"],
+//   { tags: ["Products", "getPopularProducts"] }
+// );
+const getTopRated = 
+// cache(
   async () => {
     return await prisma.product.findMany({
       orderBy: {
@@ -38,11 +40,12 @@ const getTopRated = cache(
       },
       take: 10,
     });
-  },
-  ["Products", "getTopRated"],
-  { tags: ["Products", "getTopRated"] }
-);
-const getBestDeals = cache(
+  }
+  // ["Products", "getTopRated"],
+//   { tags: ["Products", "getTopRated"] }
+// );
+const getBestDeals = 
+// cache(
   async () => {
     return await prisma.product.findMany({
       orderBy: {
@@ -50,10 +53,10 @@ const getBestDeals = cache(
       },
       take: 10,
     });
-  },
-  ["Products", "getBestDeals"],
-  { tags: ["Products", "getBestDeals"] }
-);
+  }
+  // ["Products", "getBestDeals"],
+//   { tags: ["Products", "getBestDeals"] }
+// );
 
 export default async function Home() {
   const isMobile: boolean = headers()

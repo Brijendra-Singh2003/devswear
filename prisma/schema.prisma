@@ -81,7 +81,7 @@ model Product {
   categoryId Int?
 
   item            Item[]
-  OrderedProducts OrderedProduct[]
+  Orders Order[]
   Image           Image?           @relation(fields: [imageId], references: [id])
   imageId         String?
 }
@@ -102,7 +102,7 @@ model Order {
   id        String      @id @default(uuid())
   subTotal  Int
   status    OrderStatus @default(PENDING)
-  confirmed Boolean     @default(false)
+  quantity Int     @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -111,18 +111,8 @@ model Order {
   userId     String
   address    Address          @relation(fields: [addressId], references: [id])
   addressId  Int
-  orderItems OrderedProduct[]
-}
-
-model OrderedProduct {
-  id       Int @id @default(autoincrement())
-  quantity Int
-  price    Int
-
   product   Product @relation(fields: [productId], references: [id])
   productId Int
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId   String
 }
 
 enum OrderStatus {

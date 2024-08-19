@@ -5,14 +5,25 @@ import { auth } from "@/lib/auth";
 import Stripe from "stripe";
 import prisma from "@/lib/db";
 
-import SelectAddress from "@/components/SelectAddress";
-import AddressCard from "@/components/AddressCard/AddressCard";
 import CheckoutForm from "@/components/CheckoutForm";
 import ShippingAddress from "@/components/ShippingAddress";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
-async function getProducts(userId: string, productId?: string, qty?: string) {
+export type Metadata = {
+  email: string;
+  productId?: number | string;
+  quantity: number | string;
+};
+
+async function getProducts(
+  userId: string,
+  productId?: string,
+  qty: string = "1"
+) {
+  let products = [];
+  let metadata: Metadata = { email: userId, quantity: 1 };
+
   if (productId) {
     const id = Number.parseInt(productId);
     if (isNaN(id)) return notFound();
@@ -27,25 +38,26 @@ async function getProducts(userId: string, productId?: string, qty?: string) {
         name: true,
       },
     });
-    
+
     if (!product) return notFound();
     let quantity = 1;
-    if(qty) {
+    if (qty) {
       const num = Number.parseInt(qty);
-      if(!isNaN(num)) {
+      if (!isNaN(num)) {
         quantity = num;
       }
     }
 
-    return [
+    products = [
       {
         id: 1,
         quantity,
         product,
       },
     ];
+    metadata = { email: userId, productId: product.id, quantity };
   } else {
-    return await prisma.item.findMany({
+    products = await prisma.item.findMany({
       where: {
         userId: userId,
       },
@@ -67,17 +79,23 @@ async function getProducts(userId: string, productId?: string, qty?: string) {
       },
     });
   }
+
+  return { products, metadata };
 }
 
 export default async function page(props: {
-  searchParams: { product?: string; qty?: string; };
+  searchParams: { product?: string; qty?: string };
 }) {
   const session = await auth();
 
   if (!session?.user?.email) return notFound();
 
-  const [products, user] = await Promise.all([
-    getProducts(session.user.email, props.searchParams.product, props.searchParams.qty),
+  const [{ products, metadata }, user] = await Promise.all([
+    getProducts(
+      session.user.email,
+      props.searchParams.product,
+      props.searchParams.qty
+    ),
     prisma.user.findUnique({
       where: { id: session.user.email },
       select: {
@@ -95,7 +113,7 @@ export default async function page(props: {
   const paymentIntent = await stripe.paymentIntents.create({
     amount: price,
     currency: "USD",
-    metadata: { products: JSON.stringify(products.map((p) => p.product.id)) },
+    metadata,
   });
 
   if (paymentIntent.client_secret == null) {
@@ -106,7 +124,10 @@ export default async function page(props: {
   return (
     <main className="max-w-6xl mx-auto">
       <div className="px-4 mt-4">
-        <ShippingAddress addresses={user?.addresses || []} defaultAddress={user?.defaultAddress} />
+        <ShippingAddress
+          addresses={user?.addresses || []}
+          defaultAddress={user?.defaultAddress}
+        />
       </div>
       <div className="bg-popover sm:m-4 sm:rounded-md sm:shadow-md p-4">
         <div className="px-4 text-2xl font-bold mb-2">Products</div>
