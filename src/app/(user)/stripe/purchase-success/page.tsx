@@ -44,7 +44,7 @@ export default async function page(props: {
   }
 
   return (
-    <main className="max-w-5xl w-full mx-auto space-y-8">
+    <main className="max-w-5xl min-h-screen w-full mx-auto space-y-8">
       <h1 className="text-3xl font-bold">{message}</h1>
       <div className="flex gap-4 items-center">
         {JSON.stringify(paymentIntent.metadata)}

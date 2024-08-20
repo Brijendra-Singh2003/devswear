@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 const getPopularProducts = 
-// cache(
+cache(
   async () => {
     return await prisma.product.findMany({
       orderBy: {
@@ -28,11 +28,11 @@ const getPopularProducts =
       take: 10,
     });
   }
-  // ["Products", "getPopularProducts"],
-//   { tags: ["Products", "getPopularProducts"] }
-// );
+  ,["Products", "getPopularProducts"],
+  { revalidate: 60 * 60 * 24 }
+);
 const getTopRated = 
-// cache(
+cache(
   async () => {
     return await prisma.product.findMany({
       orderBy: {
@@ -41,11 +41,11 @@ const getTopRated =
       take: 10,
     });
   }
-  // ["Products", "getTopRated"],
-//   { tags: ["Products", "getTopRated"] }
-// );
-const getBestDeals = 
-// cache(
+  ,["Products", "getTopRated"],
+  { revalidate: 60 * 60 * 24 }
+);
+const getNewProducts = 
+cache(
   async () => {
     return await prisma.product.findMany({
       orderBy: {
@@ -54,9 +54,9 @@ const getBestDeals =
       take: 10,
     });
   }
-  // ["Products", "getBestDeals"],
-//   { tags: ["Products", "getBestDeals"] }
-// );
+  ,["Products", "getNewProducts"],
+  { tags: ["Products", "getNewProducts"] }
+);
 
 export default async function Home() {
   const isMobile: boolean = headers()
@@ -67,10 +67,10 @@ export default async function Home() {
 
   const popularProducts = getPopularProducts();
   const topRated = getTopRated();
-  const bestDeals = getBestDeals();
+  const bestDeals = getNewProducts();
 
   return (
-    <main className="space-y-4">
+    <main className="space-y-4 sm:p-4">
       <section className="shadow-md">
         <App isMobile={isMobile} items={images} />
       </section>
@@ -91,9 +91,9 @@ export default async function Home() {
       </Suspense>
       <Suspense
         key={"Deals"}
-        fallback={<CollectionSkeleton title="Top Deals" />}
+        fallback={<CollectionSkeleton title="Recently Added" />}
       >
-        <Collection title="Top Deals" productsPromese={bestDeals} />
+        <Collection title="Recently Added" productsPromese={bestDeals} />
       </Suspense>
     </main>
   );

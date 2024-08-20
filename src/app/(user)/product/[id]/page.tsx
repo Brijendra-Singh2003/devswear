@@ -39,7 +39,7 @@ export default async function page({ params }: prop) {
         className="w-full sm:w-2/5 col-span-2 mx-auto object-contain sm:sticky top-16"
       />
       <div className="col-span-3 w-full flex flex-col gap-2">
-        <h1 className="capitalize px-4 text-2xl font-bold">{item.name}</h1>
+        <h1 className="capitalize px-4 sm:text-lg font-bold">{item.name}</h1>
         <p className="flex ml-4 gap-4 items-center">
           <b className="text-xl">₹{item.price - item.discount}</b>
           <span className=" line-through text-gray-400">₹{item.price}</span>

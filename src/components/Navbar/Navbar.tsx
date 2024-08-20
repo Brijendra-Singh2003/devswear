@@ -52,7 +52,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
   return (
     <header className="bg-popover w-full sticky shadow sm:top-0 -top-12 transition-all border-b z-10">
       <div className="py-2 px-4 max-w-6xl mx-auto flex items-center w-full z-10 gap-4 justify-between">
-        <Link href="/" className="text-2xl font-bold">
+        <Link href="/" className="text-2xl font-bold hover:underline">
           Logo.
         </Link>
 
@@ -130,9 +130,11 @@ const Navbar = ({ session }: { session: Session | null }) => {
                     <span>Address</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <FiPackage className="mr-2 h-4 w-4" />
-                  <span>Orders</span>
+                <DropdownMenuItem asChild>
+                  <Link href="/orders">
+                    <FiPackage className="mr-2 h-4 w-4" />
+                    <span>Orders</span>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={toggleTheme}>
                   <MoonIcon className="mr-2 h-4 w-4" />
