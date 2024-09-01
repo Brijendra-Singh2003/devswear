@@ -38,13 +38,13 @@ export default async function page({ params }: prop) {
     <>
       <main className="py-4 space-y-4 min-h-screen bg-popover sm:px-4">
         <div className="h-full w-full md:my-8 relative max-w-7xl mx-auto grid grid-cols-1 md:gap-10 md:grid-cols-2">
-          <div className="w-full aspect-[3/4] max-h-[80vh] overflow-hidden mx-auto">
+          <div className="w-full aspect-[3/4] max-h-[80vh] mx-auto">
             <Image
               src={item.imageUrl}
               height={600}
               width={600}
               alt=""
-              className="w-fit h-fit col-span-2 mx-auto object-contain sm:object-top"
+              className="h-full w-full col-span-2 mx-auto object-contain sm:object-top"
             />
           </div>
           <div className="w-full flex flex-col gap-2 mt-4">
