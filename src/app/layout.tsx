@@ -1,6 +1,8 @@
+import "react-toastify/ReactToastify.css";
 import "./globals.css";
 import { Inter as FontSans } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
+import { ToastContainer } from "react-toastify";
 
 import ThemeContextProvider from "@/context/ThemeContext";
 
@@ -19,6 +21,7 @@ export default function RootLayout({
       <head />
       <ThemeContextProvider className={fontSans.variable}>
         <NextTopLoader showSpinner={false} />
+        <ToastContainer theme="dark" />
         {children}
       </ThemeContextProvider>
     </html>

@@ -2,7 +2,7 @@ import React from "react";
 
 export default async function Footer() {
   return (
-    <footer className="bg-white hidden lg:block z-30 relative dark:bg-gray-900 mt-4">
+    <footer className="bg-white block z-30 relative dark:bg-gray-900 mt-4">
       <div className="mx-auto w-full max-w-screen-xl">
         <div className="grid grid-cols-2 gap-8 px-4 py-6 lg:py-8 md:grid-cols-4">
           <div>

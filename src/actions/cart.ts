@@ -8,7 +8,12 @@ export async function getCartSize(userId: string) {
     if (!userId) {
         return 0;
     }
-    return await prisma.item.count({ where: { userId } });
+    const result = await prisma.item.aggregate({
+        where: { userId },
+        _sum: {quantity: true}
+    });
+
+    return result._sum.quantity ?? 0;
 }
 
 export async function addItem(userId: string | undefined | null, productId: number) {

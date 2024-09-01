@@ -40,32 +40,54 @@ export async function AddNewProduct(_: unknown, formData: FormData) {
 
     console.log("Received data", result.data);
 
+    const product = await prisma.product.create({
+        data: {
+            name: result.data.name,
+            categoryId: result.data.categoryId,
+            description: result.data.description,
+            price: result.data.price,
+            discount: result.data.discount,
+            stock: result.data.stock,
+            imageUrl: ""
+        },
+        select: {id: true},
+    });
+
+    console.log("created product", product);
+    
     const bucketParams = new FormData();
-
+    
     bucketParams.append("image", result.data.image);
-    bucketParams.append("key", process.env.BUCKET_KEY as string);
+    bucketParams.append("title", result.data.name);
+    bucketParams.append("type", "image");
 
-    const img = await fetch(process.env.BUCKET_URL as string, {
+    const response = (await fetch(process.env.BUCKET_URL as string, {
         method: "POST",
+        headers: {Authorization: `Client-ID ${process.env.BUCKET_KEY}`},
         body: bucketParams,
-    }).then(res => res.json());
+    }).then(res => res.json())) as typeof SampleImageData;
 
-    console.log("Uploded image", img);
+    console.log("uploaded image", response);
 
-    if (img.success) {
-        const product = await prisma.product.create({
+    if(response.success) {
+        const Image = await prisma.image.create({
             data: {
-                name: result.data.name,
-                categoryId: result.data.categoryId,
-                description: result.data.description,
-                price: result.data.price,
-                discount: result.data.discount,
-                stock: result.data.stock,
-                imageUrl: img.data.url,
-            }
+                id: response.data.id,
+                title: response.data.title,
+                url: response.data.link,
+                height: response.data.height,
+                width: response.data.width,
+                size: response.data.size,
+                deleteHash: response.data.deletehash,
+                productId: product.id,
+            },
+            select: {url: true}
         });
 
-        console.log("created product: ", product);
+        await prisma.product.update({
+            where: {id: product.id},
+            data: {imageUrl: Image.url}
+        });
     }
 
     revalidateTag("Products");
@@ -127,3 +149,39 @@ export async function UpdateProduct(formData: FormData) {
 export async function getProduct(id: number) {
     return prisma.product.findUnique({where: {id}});
 }
+
+const SampleImageData = {
+    "status": 200,
+    "success": true,
+    "data": {
+      "id": "JRBePDz",
+      "deletehash": "EvHVZkhJhdNClgY",
+      "account_id": null,
+      "account_url": null,
+      "ad_type": null,
+      "ad_url": null,
+      "title": "Simple upload",
+      "description": "This is a simple image upload in Imgur",
+      "name": "",
+      "type": "image/jpeg",
+      "width": 600,
+      "height": 750,
+      "size": 54757,
+      "views": 0,
+      "section": null,
+      "vote": null,
+      "bandwidth": 0,
+      "animated": false,
+      "favorite": false,
+      "in_gallery": false,
+      "in_most_viral": false,
+      "has_sound": false,
+      "is_ad": false,
+      "nsfw": null,
+      "link": "https://i.imgur.com/JRBePDz.jpeg",
+      "tags": [],
+      "datetime": 1708424380,
+      "mp4": "",
+      "hls": ""
+    }
+  }
