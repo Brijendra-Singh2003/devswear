@@ -50,26 +50,26 @@ export async function AddNewProduct(_: unknown, formData: FormData) {
             stock: result.data.stock,
             imageUrl: ""
         },
-        select: {id: true},
+        select: { id: true },
     });
 
     console.log("created product", product);
-    
+
     const bucketParams = new FormData();
-    
+
     bucketParams.append("image", result.data.image);
     bucketParams.append("title", result.data.name);
     bucketParams.append("type", "image");
 
     const response = (await fetch(process.env.BUCKET_URL as string, {
         method: "POST",
-        headers: {Authorization: `Client-ID ${process.env.BUCKET_KEY}`},
+        headers: { Authorization: `Client-ID ${process.env.BUCKET_KEY}` },
         body: bucketParams,
     }).then(res => res.json())) as typeof SampleImageData;
 
     console.log("uploaded image", response);
 
-    if(response.success) {
+    if (response.success) {
         const Image = await prisma.image.create({
             data: {
                 id: response.data.id,
@@ -81,12 +81,12 @@ export async function AddNewProduct(_: unknown, formData: FormData) {
                 deleteHash: response.data.deletehash,
                 productId: product.id,
             },
-            select: {url: true}
+            select: { url: true }
         });
 
         await prisma.product.update({
-            where: {id: product.id},
-            data: {imageUrl: Image.url}
+            where: { id: product.id },
+            data: { imageUrl: Image.url }
         });
     }
 
@@ -102,32 +102,74 @@ export async function UpdateProduct(formData: FormData) {
         console.log(Object.fromEntries(formData.entries()));
         return result.error.formErrors.fieldErrors;
     }
-    
-    console.log("Received data", result.data);
-    const product = await prisma.product.findUnique({where: {id: result.data.id}, select: {imageUrl: true}});
 
-    if(!product) {
-        return {message: "product not found"};
+    console.log("Received data", result.data);
+    const product = await prisma.product.findUnique({
+        where: { id: result.data.id },
+        select: {
+            id: true,
+            imageUrl: true,
+            Image: {
+                select: { deleteHash: true, id: true }
+            }
+        }
+    });
+
+    if (!product) {
+        return { success: false, message: "product not found" };
     }
 
-    if(result.data.image) {
+    console.log("created product", product);
+
+    if (result.data.image?.size) {
         const bucketParams = new FormData();
 
         bucketParams.append("image", result.data.image);
-        bucketParams.append("key", process.env.BUCKET_KEY as string);
+        bucketParams.append("title", result.data.name);
+        bucketParams.append("type", "image");
 
-        const img = await fetch(process.env.BUCKET_URL as string, {
+        const response = (await fetch(process.env.BUCKET_URL as string, {
             method: "POST",
+            headers: { Authorization: `Client-ID ${process.env.BUCKET_KEY}` },
             body: bucketParams,
-        }).then(res => res.json());
+        }).then(res => res.json())) as typeof SampleImageData;
 
-        if(img.success) {
-            product.imageUrl = img.data.url as string;
+        console.log("uploaded image", response);
+
+        if (response.success) {
+            product.imageUrl = response.data.link;
+
+            if (product.Image.length > 0) {
+                const deleteHash = product.Image[0].deleteHash;
+                const id = product.Image[0].id;
+
+                await Promise.all([
+                    prisma.image.create({
+                        data: {
+                            id: response.data.id,
+                            title: response.data.title,
+                            url: response.data.link,
+                            height: response.data.height,
+                            width: response.data.width,
+                            size: response.data.size,
+                            deleteHash: response.data.deletehash,
+                            productId: product.id,
+                        }
+                    }),
+                    prisma.image.delete({ where: { id } }),
+                    fetch("https://api.imgur.com/3/image/" + deleteHash, {
+                        method: "DELETE",
+                        headers: {
+                            Authorization: 'Client-ID c44d68f1e56fb2a',
+                        },
+                    })
+                ]);
+            }
         }
     }
 
     const newProduct = await prisma.product.update({
-        where: {id: result.data.id},
+        where: { id: result.data.id },
         data: {
             name: result.data.name,
             categoryId: result.data.categoryId,
@@ -147,41 +189,41 @@ export async function UpdateProduct(formData: FormData) {
 }
 
 export async function getProduct(id: number) {
-    return prisma.product.findUnique({where: {id}});
+    return prisma.product.findUnique({ where: { id } });
 }
 
 const SampleImageData = {
     "status": 200,
     "success": true,
     "data": {
-      "id": "JRBePDz",
-      "deletehash": "EvHVZkhJhdNClgY",
-      "account_id": null,
-      "account_url": null,
-      "ad_type": null,
-      "ad_url": null,
-      "title": "Simple upload",
-      "description": "This is a simple image upload in Imgur",
-      "name": "",
-      "type": "image/jpeg",
-      "width": 600,
-      "height": 750,
-      "size": 54757,
-      "views": 0,
-      "section": null,
-      "vote": null,
-      "bandwidth": 0,
-      "animated": false,
-      "favorite": false,
-      "in_gallery": false,
-      "in_most_viral": false,
-      "has_sound": false,
-      "is_ad": false,
-      "nsfw": null,
-      "link": "https://i.imgur.com/JRBePDz.jpeg",
-      "tags": [],
-      "datetime": 1708424380,
-      "mp4": "",
-      "hls": ""
+        "id": "JRBePDz",
+        "deletehash": "EvHVZkhJhdNClgY",
+        "account_id": null,
+        "account_url": null,
+        "ad_type": null,
+        "ad_url": null,
+        "title": "Simple upload",
+        "description": "This is a simple image upload in Imgur",
+        "name": "",
+        "type": "image/jpeg",
+        "width": 600,
+        "height": 750,
+        "size": 54757,
+        "views": 0,
+        "section": null,
+        "vote": null,
+        "bandwidth": 0,
+        "animated": false,
+        "favorite": false,
+        "in_gallery": false,
+        "in_most_viral": false,
+        "has_sound": false,
+        "is_ad": false,
+        "nsfw": null,
+        "link": "https://i.imgur.com/JRBePDz.jpeg",
+        "tags": [],
+        "datetime": 1708424380,
+        "mp4": "",
+        "hls": ""
     }
-  }
+}
