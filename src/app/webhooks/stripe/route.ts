@@ -1,6 +1,7 @@
 import { Metadata } from "@/app/(user)/checkout/page";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -68,8 +69,6 @@ export async function POST(req: NextRequest) {
                     }
                 });
 
-                const item = items[0];
-
                 await prisma.order.createMany({
                     data: items.map(item => ({
                         userId: email,
@@ -86,6 +85,8 @@ export async function POST(req: NextRequest) {
                     }
                 });
             }
+
+            revalidatePath("/orders");
             break;
         }
     }

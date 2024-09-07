@@ -20,7 +20,7 @@ export default function RootLayout({
         <NavLink href="/admin/users">Customers</NavLink>
         <NavLink href="/admin/orders">Orders</NavLink>
       </Nav>
-      <div className="container my-6">{children}</div>
+      <div className="container py-6">{children}</div>
     </div>
   );
 }

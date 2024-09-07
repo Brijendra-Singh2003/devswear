@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { FaCircle } from "react-icons/fa6";
+import CancelBtn from "./CancelBtn";
 
 export default async function page() {
   const session = await auth();
@@ -36,6 +37,9 @@ export default async function page() {
         },
       },
     },
+    orderBy: {
+      createdAt: "desc",
+    }
   });
 
   return (
@@ -45,12 +49,14 @@ export default async function page() {
       </h1>
 
       {orders.map((order) => (
-        <Link
+        <div
           key={order.id}
-          href={"/product/" + order.product.id}
           className="flex sm:grid grid-cols-4 gap-2 md:gap-4 px-2 py-4 md:items-center bg-popover shadow hover:shadow-md transition"
         >
-          <div className="size-24 min-w-24 md:size-32 md:min-w-32 justify-self-center">
+          <Link
+            href={"/product/" + order.product.id}
+            className="size-24 min-w-24 md:size-32 md:min-w-32 justify-self-center"
+          >
             <Image
               className="h-full w-full object-contain"
               height={128}
@@ -58,7 +64,7 @@ export default async function page() {
               src={order.product.imageUrl}
               alt=""
             />
-          </div>
+          </Link>
 
           <div className="md:py-2 px-2 col-span-2">
             <div className="flex sm:hidden items-center gap-2 mb-1">
@@ -75,17 +81,25 @@ export default async function page() {
                 })}
               </span>
             </h2>
-            <p className="line-clamp-1 text-muted-foreground my-1">
+            <Link
+              href={"/product/" + order.product.id}
+              className="line-clamp-1 text-muted-foreground my-1 hover:underline"
+            >
               {order.product.name}
-            </p>
+            </Link>
             <b>₹{order.subTotal}</b>
+            <br />
+
+            {order.status !== "CANCELLED" && order.status !== "DELIVERED" && (
+              <CancelBtn id={order.id} />
+            )}
           </div>
 
           <div className="hidden sm:flex items-center gap-2 px-4 w-32 min-w-32 justify-self-center">
-            <FaCircle className={"size-2" + (getStatusColor[order.status])} />
+            <FaCircle className={"size-2" + getStatusColor[order.status]} />
             <h3>{order.status.toLowerCase()}</h3>
           </div>
-        </Link>
+        </div>
       ))}
     </main>
   );

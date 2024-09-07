@@ -18,12 +18,12 @@ import { getStatusColor } from "@/lib/utils";
 
 const PAGE_SIZE = 10;
 
-export default function page(props: {searchParams: {page?: string}}) {
+export default function page(props: { searchParams: { page?: string } }) {
   let page = 0;
 
-  if(props.searchParams.page) {
+  if (props.searchParams.page) {
     const num = Number.parseInt(props.searchParams.page);
-    if(!isNaN(num)) {
+    if (!isNaN(num)) {
       page = num;
     }
   }
@@ -40,17 +40,17 @@ export default function page(props: {searchParams: {page?: string}}) {
 
       <div className="flex max-w-sm mx-auto justify-between items-center gap-4 mt-8">
         <Button disabled={page <= 0}>
-          <Link href={"/admin/orders?page="  +(page-1)}>Previous</Link>
+          <Link href={"/admin/orders?page=" + (page - 1)}>Previous</Link>
         </Button>
         <Button>
-          <Link href={"/admin/orders?page=" + (page+1)}>Next</Link>
+          <Link href={"/admin/orders?page=" + (page + 1)}>Next</Link>
         </Button>
       </div>
     </>
   );
 }
 
-async function ProductsTable({page}: {page: number}) {
+async function ProductsTable({ page }: { page: number }) {
   const orders = await prisma.order.findMany({
     select: {
       id: true,
@@ -59,16 +59,16 @@ async function ProductsTable({page}: {page: number}) {
       status: true,
       product: {
         select: {
-            name: true,
-            imageUrl: true,
-        }
-      }
+          name: true,
+          imageUrl: true,
+        },
+      },
     },
     orderBy: {
-      createdAt: "desc"
+      createdAt: "desc",
     },
     skip: PAGE_SIZE * page,
-    take: PAGE_SIZE
+    take: PAGE_SIZE,
   });
 
   if (orders.length === 0) {
@@ -92,14 +92,24 @@ async function ProductsTable({page}: {page: number}) {
         {orders.map((order) => (
           <TableRow key={order.id}>
             <TableCell>
-              <Image className="object-cover size-10" src={order.product.imageUrl} height={40} width={40} alt="" />
+              <Image
+                className="object-cover size-10"
+                src={order.product.imageUrl}
+                height={40}
+                width={40}
+                alt=""
+              />
             </TableCell>
-            <TableCell className="line-clamp-1 h-9">{order.product.name}</TableCell>
+            <TableCell className="line-clamp-1 h-9">
+              {order.product.name}
+            </TableCell>
             <TableCell>{order.userId}</TableCell>
             <TableCell>₹{formatNumber(order.subTotal)}</TableCell>
-            <TableCell className="flex items-center gap-2">
+            <TableCell>
+              <span className="flex items-center gap-2">
                 <FaCircle className={"size-2" + getStatusColor[order.status]} />
                 <h3>{order.status.toLowerCase()}</h3>
+              </span>
             </TableCell>
           </TableRow>
         ))}

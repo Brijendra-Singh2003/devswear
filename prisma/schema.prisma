@@ -96,7 +96,7 @@ model Image {
   deleteHash String @unique
   productId  Int
 
-  product Product @relation(fields: [productId], references: [id])
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Category {
@@ -113,7 +113,7 @@ model Item {
   userId    String
   productId Int
   user      User    @relation(fields: [userId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

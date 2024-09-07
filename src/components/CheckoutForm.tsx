@@ -57,7 +57,7 @@ function Form({ price, disabled }: { price: number; disabled: boolean; }) {
         elements,
         confirmParams: {
           return_url:
-            process.env.NEXT_PUBLIC_SERVER_URL + "/stripe/purchase-success",
+            process.env.NEXT_PUBLIC_SERVER_URL + "/orders",
         },
       })
       .then(({ error }) => {

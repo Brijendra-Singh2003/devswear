@@ -1,7 +1,7 @@
 "use server";
 
+// import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
-import { Product } from "@prisma/client";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -31,8 +31,13 @@ const editProductSchema = z.object({
 });
 
 export async function AddNewProduct(_: unknown, formData: FormData) {
-    const result = addProductSchema.safeParse(Object.fromEntries(formData.entries()));
+    // const session = await auth();
 
+    // if (session?.user?.email !== "brijendra0369@gmail.com") {
+    //     return {};
+    // }
+
+    const result = addProductSchema.safeParse(Object.fromEntries(formData.entries()));
     if (!result.success) {
         console.log(Object.fromEntries(formData.entries()));
         return result.error.formErrors.fieldErrors;
@@ -96,6 +101,12 @@ export async function AddNewProduct(_: unknown, formData: FormData) {
 }
 
 export async function UpdateProduct(formData: FormData) {
+    // const session = await auth();
+
+    // if (session?.user?.email !== "brijendra0369@gmail.com") {
+    //     return {};
+    // }
+
     const result = editProductSchema.safeParse(Object.fromEntries(formData.entries()));
 
     if (!result.success) {
@@ -157,7 +168,7 @@ export async function UpdateProduct(formData: FormData) {
                         }
                     }),
                     prisma.image.delete({ where: { id } }),
-                    fetch("https://api.imgur.com/3/image/" + deleteHash, {
+                    fetch(`${process.env.BUCKET_URL}/${deleteHash}`, {
                         method: "DELETE",
                         headers: {
                             Authorization: 'Client-ID c44d68f1e56fb2a',
@@ -188,27 +199,89 @@ export async function UpdateProduct(formData: FormData) {
     redirect("/admin/products");
 }
 
+export async function deleteProduct(id: number) {
+    const product = await prisma.product.delete({
+        where: { id },
+        select: {
+            id: true,
+            Image: {
+                select: { deleteHash: true }
+            },
+            _count: {select: {Orders: true}}
+        }
+    });
+
+    if (!product) {
+        return { success: false, message: "product not found" };
+    }
+
+    if (product._count.Orders > 0) {
+        return { success: false, message: "product is ordered by someone" };
+    }
+
+    await Promise.all(product.Image.map(
+        image => fetch(
+            `${process.env.BUCKET_URL}/${image.deleteHash}`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: 'Client-ID c44d68f1e56fb2a',
+                },
+            }
+        ).then(() => console.log("deleted image: ", image.deleteHash)))
+    );
+
+    revalidateTag("Products");
+    revalidatePath("/");
+    revalidatePath("/admin/products");
+}
+
 export async function getProduct(id: number) {
-    return prisma.product.findUnique({ where: { id } });
+    return await prisma.product.findUnique({ where: { id } });
+}
+
+export async function GetAllProducts() {
+    return await prisma.product.findMany({
+        select: {
+            id: true,
+            name: true,
+            price: true,
+            discount: true,
+            stock: true,
+            imageUrl: true,
+            _count: {
+                select: {
+                    Orders: {
+                        where: {
+                            status: { notIn: ["DELIVERED", "CANCELLED"] },
+                        },
+                    },
+                },
+            },
+        },
+        orderBy: {
+            createdAt: "desc",
+        }
+    });
 }
 
 const SampleImageData = {
     "status": 200,
     "success": true,
     "data": {
-        "id": "JRBePDz",
-        "deletehash": "EvHVZkhJhdNClgY",
+        "id": "",
+        "deletehash": "",
         "account_id": null,
         "account_url": null,
         "ad_type": null,
         "ad_url": null,
-        "title": "Simple upload",
-        "description": "This is a simple image upload in Imgur",
+        "title": "",
+        "description": "",
         "name": "",
-        "type": "image/jpeg",
-        "width": 600,
-        "height": 750,
-        "size": 54757,
+        "type": "",
+        "width": 0,
+        "height": 0,
+        "size": 0,
         "views": 0,
         "section": null,
         "vote": null,
@@ -220,9 +293,9 @@ const SampleImageData = {
         "has_sound": false,
         "is_ad": false,
         "nsfw": null,
-        "link": "https://i.imgur.com/JRBePDz.jpeg",
+        "link": "",
         "tags": [],
-        "datetime": 1708424380,
+        "datetime": 0,
         "mp4": "",
         "hls": ""
     }
